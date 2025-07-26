@@ -1,8 +1,11 @@
 "use client";
 
-import React from "react";
-import type { FormProps } from "antd";
+import React, { useState } from "react";
 import { Button, Flex, Form, Input, Typography } from "antd";
+import Link from "next/link";
+import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
+import { auth } from "@/common/lib/firebase";
+import Error from "next/error";
 
 type FieldType = {
   email: string;
@@ -10,15 +13,34 @@ type FieldType = {
   confirmPassword?: string;
 };
 
-const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
-  console.log("Success:", values);
-};
-
-const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
-  console.log("Failed:", errorInfo);
-};
-
 const Register = () => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const [createUserAndPassword] = useCreateUserWithEmailAndPassword(auth);
+
+  const handleRegister = async () => {
+    setLoading(true);
+    try {
+      const userCredential = await createUserAndPassword(email, password);
+      sessionStorage.setItem("user", "true");
+      console.log({ userCredential });
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.log(" Error: ", error);
+      } else {
+        console.log("Unknown error:", error);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <Flex style={{ height: "100vh" }} justify="center" align="center">
       <Form
@@ -31,8 +53,6 @@ const Register = () => {
           borderRadius: "10px",
         }}
         initialValues={{ remember: true }}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
         <Form.Item<FieldType>
@@ -46,18 +66,25 @@ const Register = () => {
             style={{
               width: "100%",
             }}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </Form.Item>
 
         <Form.Item<FieldType>
           name="password"
-          rules={[{ required: true, message: "Please input your password!" }]}
+          rules={[
+            { required: true, message: "Please input your password!" },
+            { min: 6, message: "Password must be at least 6 characters!" },
+          ]}
         >
           <Input.Password
             placeholder="Password"
             type="password"
             size="large"
             style={{ width: "100%" }}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </Form.Item>
 
@@ -74,12 +101,17 @@ const Register = () => {
                 if (!value || getFieldValue("password") === value) {
                   return Promise.resolve();
                 }
-                return Promise.reject(new Error("The passwords do not match!"));
+                return Promise.reject("The passwords do not match!");
               },
             }),
           ]}
         >
-          <Input.Password placeholder="Confirm Password" />
+          <Input.Password
+            placeholder="Confirm Password"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
         </Form.Item>
 
         <Form.Item label={null}>
@@ -89,6 +121,9 @@ const Register = () => {
             style={{ marginTop: "10px" }}
             size="large"
             block
+            onClick={handleRegister}
+            loading={loading}
+            disabled={loading}
           >
             Submit
           </Button>
@@ -99,7 +134,7 @@ const Register = () => {
             type="secondary"
             style={{ textAlign: "center", display: "block" }}
           >
-            Already have an account? <a href="/login">Login</a>
+            Already have an account? <Link href="/login">Login</Link>
           </Typography.Text>
         </Form.Item>
       </Form>

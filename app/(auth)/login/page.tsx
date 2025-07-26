@@ -1,23 +1,44 @@
 "use client";
 
-import React from "react";
-import type { FormProps } from "antd";
+import React, { useState } from "react";
 import { Button, Flex, Form, Input, Typography } from "antd";
+import Link from "next/link";
+import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
+import { auth } from "@/common/lib/firebase";
+import { useRouter } from "next/navigation";
 
 type FieldType = {
   email: string;
   password: string;
 };
 
-const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
-  console.log("Success:", values);
-};
-
-const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
-  console.log("Failed:", errorInfo);
-};
-
 const Login = () => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+
+  const [loading, setLoading] = useState<boolean>(false);
+  const [signinWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
+
+  const router = useRouter();
+
+  const handleLogin = async () => {
+    setLoading(true);
+    try {
+      const response = await signinWithEmailAndPassword(email, password);
+      router.push("/products");
+      console.log({ response });
+      sessionStorage.setItem("user", "true");
+      setEmail("");
+      setPassword("");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Error:", error, error.message);
+      } else {
+        console.error("Unknown error:", error);
+      }
+    }
+  };
+
   return (
     <Flex style={{ height: "100vh" }} justify="center" align="center">
       <Form
@@ -30,9 +51,8 @@ const Login = () => {
           borderRadius: "10px",
         }}
         initialValues={{ remember: true }}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
         autoComplete="off"
+        onFinish={handleLogin}
       >
         <Form.Item<FieldType>
           name="email"
@@ -45,18 +65,25 @@ const Login = () => {
             style={{
               width: "100%",
             }}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </Form.Item>
 
         <Form.Item<FieldType>
           name="password"
-          rules={[{ required: true, message: "Please input your password!" }]}
+          rules={[
+            { required: true, message: "Please input your password!" },
+            { min: 6, message: "Password must be at least 6 characters!" },
+          ]}
         >
           <Input.Password
             placeholder="Password"
             type="password"
             size="large"
             style={{ width: "100%" }}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </Form.Item>
 
@@ -67,6 +94,7 @@ const Login = () => {
             style={{ marginTop: "10px" }}
             size="large"
             block
+            loading={loading}
           >
             Login
           </Button>
@@ -77,7 +105,7 @@ const Login = () => {
             type="secondary"
             style={{ textAlign: "center", display: "block" }}
           >
-            Don&apos;t have an account? <a href="/register">Register</a>
+            Dont have an account? <Link href="/register">Register</Link>
           </Typography.Text>
         </Form.Item>
       </Form>

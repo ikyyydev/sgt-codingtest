@@ -20,3 +20,106 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+li {
+  list-style: none;
+}
+
+.contaier {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Navbar */
+nav {
+  width: 100%;
+  height: 60px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+nav .container {
+  width: 100%;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+nav .wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+
+nav .logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 200px;
+  height: 40px;
+  border-radius: 5px;
+}
+
+nav .navlist {
+  flex: 1;
+}
+
+nav .navlist ul {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  height: 100%;
+  gap: 20px;
+}
+
+nav .button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.user-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-button button {
+  padding: 10px 20px;
+  background-color: #e50808;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.user-button button:hover {
+  background-color: #c00;
+}
+
+/* Home */
+.hero {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+.hero p {
+  font-size: 1.5rem;
+}
