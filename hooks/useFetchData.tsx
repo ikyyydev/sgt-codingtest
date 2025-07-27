@@ -26,11 +26,10 @@ function useFetchdata(apiEndpoint: string) {
       }
     };
 
-    // fetch blog data only if category exists
     if (apiEndpoint) {
       fetchAlldata();
     }
-  }, [initialLoad, apiEndpoint]); // depend on initialload and endpoint to trigger api category
+  }, [initialLoad, apiEndpoint]);
 
   return { alldata, loading };
 }

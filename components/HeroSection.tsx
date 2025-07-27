@@ -16,7 +16,7 @@ const HeroSection = () => {
   return (
     <section className="hero">
       <h1>Welcome to the Home Page</h1>
-      <p>This is a simple home page for the application.</p>
+      <p>You are logged in.</p>
     </section>
   );
 };
